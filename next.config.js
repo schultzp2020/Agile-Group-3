@@ -15,5 +15,8 @@ module.exports = withPlugins([], {
       }
     });
     return config;
+  },
+  images: {
+    domains: ['avatars.dicebear.com']
   }
 });

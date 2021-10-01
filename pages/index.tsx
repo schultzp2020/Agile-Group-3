@@ -1,30 +1,96 @@
-import type { Student } from 'custom-types';
-import { ImportCsv } from '@src/components';
-import { useState } from 'react';
+import type { Student, StudentAction, StudentState, SelectedFile } from 'custom-types';
+import { StudentActionKind } from '@src/enums';
+import { ExportCsv, ImportCsv, StudentStack, StudentViewer } from '@src/components';
+import { useReducer, useState } from 'react';
 
 export const Home: React.FC = () => {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [csvFile, setCsvFile] = useState<SelectedFile>({ file: '', date: new Date() });
+  const [studentState, studentDispatch] = useReducer<React.Reducer<StudentState, StudentAction>>(
+    studentReducer,
+    { activeStudents: [], inactiveStudents: [] }
+  );
 
   return (
-    <div className="w-screen h-screen">
-      {!students.length ? (
-        <ImportCsv setStudents={setStudents} />
+    <div className="h-screen w-screen">
+      {!studentState.activeStudents.length && !studentState.inactiveStudents.length ? (
+        <ImportCsv studentDispatch={studentDispatch} csvFile={csvFile} setCsvFile={setCsvFile} />
       ) : (
-        <div>
-          {students.map((student) => (
-            <ul key={`${student.firstName}-${student.lastName}`}>
-              <li>{student.firstName}</li>
-              <li>{student.lastName}</li>
-              <li>{student.numOfSkips}</li>
-              <li>{student.numOfSatisfactions}</li>
-              <li>{student.numOfDissatisfactions}</li>
-            </ul>
-          ))}
+        <div className="flex justify-between h-full w-full">
+          <div className="grid grid-cols-3 gap-4 h-full w-full">
+            <StudentStack students={studentState.activeStudents.slice(1, 6)} />
+            <div className="col-span-2">
+              <StudentViewer
+                student={studentState.activeStudents[0]}
+                studentDispatch={studentDispatch}
+              />
+            </div>
+          </div>
+          <ExportCsv studentState={studentState} csvFile={csvFile} />
         </div>
       )}
     </div>
   );
 };
 Home.displayName = 'Home';
+
+// Reducer function for useReducer hook
+const studentReducer = (state: StudentState, action: StudentAction): StudentState => {
+  const { activeStudents, inactiveStudents } = state;
+  const { type, payload } = action;
+
+  if (type === StudentActionKind.SET_STUDENTS) {
+    // Randomize the payload as active students
+    return {
+      activeStudents: shuffleArray(payload as Student[]),
+      inactiveStudents: []
+    };
+  }
+
+  // If there are no active students, return the current state
+  if (!activeStudents.length) {
+    return state;
+  }
+
+  const currentStudent = activeStudents[0];
+  activeStudents.shift();
+
+  switch (type) {
+    case StudentActionKind.SKIP:
+      (currentStudent as Student).numOfSkips++;
+      break;
+    case StudentActionKind.SATISFIED:
+      (currentStudent as Student).numOfSatisfactions++;
+      break;
+
+    case StudentActionKind.DISSATISFIED:
+      (currentStudent as Student).numOfDissatisfactions++;
+
+      break;
+  }
+  inactiveStudents.push(currentStudent as Student);
+
+  // If there are no remaining active students, randomize the inactive students and set them as active students
+  if (!activeStudents.length) {
+    return {
+      activeStudents: shuffleArray(inactiveStudents),
+      inactiveStudents: []
+    };
+  }
+
+  return {
+    activeStudents,
+    inactiveStudents
+  };
+};
+
+// Fisher-Yates (aka Knuth) Shuffle.
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
 
 export default Home;

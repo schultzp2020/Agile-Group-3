@@ -6,4 +6,19 @@ declare module 'custom-types' {
     numOfSatisfactions: number;
     numOfDissatisfactions: number;
   }
+
+  interface StudentAction {
+    type: StudentActionKind;
+    payload?: Student[];
+  }
+
+  interface StudentState {
+    activeStudents: Student[];
+    inactiveStudents: Student[];
+  }
+
+  interface SelectedFile {
+    file: File | string;
+    date: Date;
+  }
 }

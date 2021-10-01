@@ -1,0 +1,6 @@
+export enum StudentActionKind {
+  SET_STUDENTS = 'SET_STUDENTS',
+  SKIP = 'SKIP',
+  SATISFIED = 'SATISFIED',
+  DISSATISFIED = 'DISSATISFIED'
+}
