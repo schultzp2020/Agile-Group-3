@@ -1,11 +1,22 @@
 import Head from 'next/head';
 
+/**
+ * The Meta prop interface
+ * @param title - The webpage title for browsers
+ * @param keywords - The webpage keywords for browsers
+ * @param description - The webpage description for browsers
+ */
 export interface MetaProps {
   title?: string;
   keywords?: string;
   description?: string;
 }
 
+/**
+ * {@link Meta} implements a way to tell browsers what the webpage is
+ * @param MetaProps - The required props for Meta
+ * @returns React function component
+ */
 export const Meta: React.FC<MetaProps> = ({
   title,
   keywords,
@@ -29,6 +40,9 @@ export const Meta: React.FC<MetaProps> = ({
 );
 Meta.displayName = 'Meta';
 
+/**
+ * The default props for all webpages under the server
+ */
 Meta.defaultProps = {
   title: 'Programming Assessment',
   keywords: 'Programming Assessment',

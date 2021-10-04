@@ -2,7 +2,7 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 
 /**
- * Renders the {@link MyDocument}
+ * Renders the custom {@link MyDocument}
  */
 class MyDocument extends Document {
   public render(): React.ReactElement {

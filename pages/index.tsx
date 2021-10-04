@@ -3,6 +3,10 @@ import { StudentActionKind } from '@src/enums';
 import { ExportCsv, ImportCsv, StudentStack, StudentViewer } from '@src/components';
 import { useReducer, useState } from 'react';
 
+/**
+ * {@link Home} implements the main viewer for the webpage root
+ * @returns React function component
+ */
 export const Home: React.FC = () => {
   const [csvFile, setCsvFile] = useState<SelectedFile>({ file: '', date: new Date() });
   const [studentState, studentDispatch] = useReducer<React.Reducer<StudentState, StudentAction>>(
@@ -33,7 +37,12 @@ export const Home: React.FC = () => {
 };
 Home.displayName = 'Home';
 
-// Reducer function for useReducer hook
+/**
+ * Reducer function for useReducer hook
+ * @param state - The current student state
+ * @param action - The action to do on the student state
+ * @returns an updated student state
+ */
 const studentReducer = (state: StudentState, action: StudentAction): StudentState => {
   const { activeStudents, inactiveStudents } = state;
   const { type, payload } = action;
@@ -51,6 +60,7 @@ const studentReducer = (state: StudentState, action: StudentAction): StudentStat
     return state;
   }
 
+  // Get the current student and remove it from activeStudents
   const currentStudent = activeStudents[0];
   activeStudents.shift();
 
@@ -64,9 +74,10 @@ const studentReducer = (state: StudentState, action: StudentAction): StudentStat
 
     case StudentActionKind.DISSATISFIED:
       (currentStudent as Student).numOfDissatisfactions++;
-
       break;
   }
+
+  // Add the current student to the end of inactiveStudents
   inactiveStudents.push(currentStudent as Student);
 
   // If there are no remaining active students, randomize the inactive students and set them as active students
@@ -77,13 +88,18 @@ const studentReducer = (state: StudentState, action: StudentAction): StudentStat
     };
   }
 
+  // Return the updated student state
   return {
     activeStudents,
     inactiveStudents
   };
 };
 
-// Fisher-Yates (aka Knuth) Shuffle.
+/**
+ * Fisher-Yates (aka Knuth) Shuffle.
+ * @param array - The array to randomize
+ * @returns a randomized array
+ */
 function shuffleArray<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

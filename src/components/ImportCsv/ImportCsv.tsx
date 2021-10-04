@@ -2,42 +2,77 @@ import type { Student, StudentAction, SelectedFile } from 'custom-types';
 import { StudentActionKind } from '@src/enums';
 import Papa from 'papaparse';
 
+/**
+ * The ImportCsv prop interface
+ * @param studentDispatch - The student reducer function to change the student state
+ * @param csvFile - The csv file containing the name and date of the roster
+ * @param setCsvFile - The {@link csvFile} state setter function
+ */
 export interface ImportCsvProps {
   studentDispatch: React.Dispatch<StudentAction>;
   csvFile: SelectedFile;
   setCsvFile: React.Dispatch<React.SetStateAction<SelectedFile>>;
 }
 
+/**
+ * The unparsed student type
+ */
 export type UnparsedStudent = [string, string];
 
+/**
+ * {@link ImportCsv} implements a way to import the student roster information
+ * @param ImportCsvProps - The required props for ImportCsv
+ * @returns React function component
+ */
 export const ImportCsv: React.FC<ImportCsvProps> = ({
   studentDispatch,
   csvFile,
   setCsvFile
 }: ImportCsvProps) => {
+  /**
+   * Sets the csv file for the student roster
+   * @param event - HTML input event
+   */
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const target = event.target as HTMLInputElement;
     const file: File = (target.files as FileList)[0];
     setCsvFile({ file, date: new Date() });
   };
 
+  /**
+   * Parses the csv file for the student roster
+   */
   const importCsv = (): void => {
     if (typeof csvFile !== 'string') {
       Papa.parse(csvFile.file, { complete: updateData });
     }
   };
 
+  /**
+   * Dispatches a {@link StudentActionKind.SET_STUDENTS} request
+   * @param results - The unparsed results from the csv
+   */
   const updateData = (results: Papa.ParseResult<UnparsedStudent>): void => {
-    checkForStudents(results.data);
+    let err = checkForStudents(results.data);
+    if (err) {
+      return;
+    }
 
-    const unparsedStudents = correctForEOLInFile(results.data);
+    const unparsedStudents = correctForEOFInFile(results.data);
 
-    checkForStudentDuplicates(unparsedStudents);
-    checkForStudentErrors(unparsedStudents);
+    err = checkForStudentDuplicates(unparsedStudents);
+    if (err) {
+      return;
+    }
+
+    err = checkForStudentErrors(unparsedStudents);
+    if (err) {
+      return;
+    }
 
     studentDispatch({
       type: StudentActionKind.SET_STUDENTS,
-      payload: parseStudents(unparsedStudents)
+      payload: mapStudents(unparsedStudents)
     });
   };
 
@@ -65,6 +100,11 @@ export const ImportCsv: React.FC<ImportCsvProps> = ({
 };
 ImportCsv.displayName = 'ImportCsv';
 
+/**
+ * Finds duplicate students
+ * @param arr - The unparsed students array
+ * @returns an array of duplicate students
+ */
 const findDuplicateStudents = (arr: UnparsedStudent[]): UnparsedStudent[] =>
   arr.filter(([curFirstName, curLastName], index) =>
     arr.slice(0, index).some(([prevFirstName, prevLastName]) => {
@@ -74,10 +114,20 @@ const findDuplicateStudents = (arr: UnparsedStudent[]): UnparsedStudent[] =>
     })
   );
 
+/**
+ * Finds students that have errors attached to them i.e., no first or last name
+ * @param arr - The unparsed students array
+ * @returns an array of error students
+ */
 const findStudentErrors = (arr: UnparsedStudent[]): UnparsedStudent[] =>
   arr.filter(([firstName, lastName]) => !firstName || !lastName);
 
-const correctForEOLInFile = (arr: UnparsedStudent[]): UnparsedStudent[] => {
+/**
+ * Removes the end of file extra line
+ * @param arr - The unparsed students array
+ * @returns an array of students
+ */
+const correctForEOFInFile = (arr: UnparsedStudent[]): UnparsedStudent[] => {
   const [lastStudentFirstName, lastStudentLastName] = arr[arr.length - 1];
 
   if (!lastStudentFirstName || lastStudentLastName) {
@@ -87,32 +137,54 @@ const correctForEOLInFile = (arr: UnparsedStudent[]): UnparsedStudent[] => {
   }
 };
 
-const checkForStudents = (arr: UnparsedStudent[]): void => {
+/**
+ * Checks to see if the csv file has information
+ * @param arr - The unparsed students array
+ */
+const checkForStudents = (arr: UnparsedStudent[]): null | Error => {
   if (!arr.length) {
     window.alert('No student data provided!');
-    return;
+    return Error('No students provided!');
   }
+
+  return null;
 };
 
-const checkForStudentDuplicates = (arr: UnparsedStudent[]): void => {
+/**
+ * Checks to see if the csv file has duplicate students
+ * @param arr - The unparsed students array
+ */
+const checkForStudentDuplicates = (arr: UnparsedStudent[]): null | Error => {
   const studentDuplicates = findDuplicateStudents(arr);
 
   if (studentDuplicates.length) {
     window.alert('Duplicate students!');
-    return;
+    return Error('Duplicate students!');
   }
+
+  return null;
 };
 
-const checkForStudentErrors = (arr: UnparsedStudent[]): void => {
+/**
+ * Checks to see if the csv file has error students
+ * @param arr - The unparsed students array
+ */
+const checkForStudentErrors = (arr: UnparsedStudent[]): null | Error => {
   const studentErrors = findStudentErrors(arr);
 
   if (studentErrors.length) {
     window.alert('Error students!');
-    return;
+    return Error('Error students!');
   }
+
+  return null;
 };
 
-const parseStudents = (arr: UnparsedStudent[]): Student[] =>
+/**
+ * Maps the unparsed students to {@link Student} array
+ * @param arr - The mapped students array
+ */
+const mapStudents = (arr: UnparsedStudent[]): Student[] =>
   arr.map(([firstName, lastName]) => ({
     firstName,
     lastName,

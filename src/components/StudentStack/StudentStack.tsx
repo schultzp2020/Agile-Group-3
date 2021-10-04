@@ -1,10 +1,19 @@
 import type { Student } from 'custom-types';
 import Image from 'next/image';
 
+/**
+ * The StudentStack prop interface
+ * @param students - The active students list
+ */
 export interface StudentStackProps {
   students: Student[];
 }
 
+/**
+ * {@link StudentStack} implements a way to view the active students list
+ * @param StudentStackProps - The required props for StudentStack
+ * @returns React function component
+ */
 export const StudentStack: React.FC<StudentStackProps> = ({ students }: StudentStackProps) => (
   <div className="flex items-center justify-center h-full w-full">
     <ul

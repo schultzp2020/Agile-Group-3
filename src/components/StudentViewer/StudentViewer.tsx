@@ -2,11 +2,21 @@ import type { Student, StudentAction } from 'custom-types';
 import { StudentActionKind } from '@src/enums';
 import Image from 'next/image';
 
+/**
+ * The StudentViewer prop interface
+ * @param student - The current active student
+ * @param studentDispatch - The student reducer function to change the student state
+ */
 export interface StudentViewerProps {
   student: Student;
   studentDispatch: React.Dispatch<StudentAction>;
 }
 
+/**
+ * {@link StudentViewer} implements a way to view the current active student
+ * @param StudentStackProps - The required props for StudentViewer
+ * @returns React function component
+ */
 export const StudentViewer: React.FC<StudentViewerProps> = ({
   student,
   studentDispatch
