@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
+    "allowJs": false,
+    "target": "es5",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "noImplicitAny": true,
+    "typeRoots": ["src/@types", "node_modules/@types"],
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "outFile": "./index.js",
+    "module": "system"
+  },
+  "include": ["src/**.*.js", "src/**.*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
+  "exclude": [".github", "node_modules"]
+}

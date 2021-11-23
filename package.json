@@ -1,0 +1,25 @@
+{
+  "name": "agile-group-3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "typescript": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.9"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schultzp2020/Agile-Group-3.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schultzp2020/Agile-Group-3/issues"
+  },
+  "homepage": "https://github.com/schultzp2020/Agile-Group-3#readme"
+}
