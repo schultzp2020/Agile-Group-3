@@ -1,4 +1,17 @@
 import { Meta } from '@src/components';
+import Link from 'next/link';
+
+export interface Page {
+  name: string;
+  href: string;
+}
+
+const pages: Page[] = [
+  { name: 'Home Page', href: '/' },
+  { name: 'Scheduler', href: '/scheduler' },
+  { name: 'SI', href: '/si' },
+  { name: 'Professor', href: '/professor' }
+];
 
 /**
  * The Layout prop interface
@@ -15,10 +28,17 @@ export interface LayoutProps {
  */
 export const Layout: React.FC<LayoutProps> = ({ children }: LayoutProps) => (
   <div>
-    <div>
-      <Meta />
-      {children}
-    </div>
+    <Meta />
+    <ul className="m-4 flex justify-evenly">
+      {pages.map(({ name, href }) => (
+        <li key={name}>
+          <Link href={href}>
+            <a className="p-2 border-2 border-black">{name}</a>
+          </Link>
+        </li>
+      ))}
+    </ul>
+    {children}
   </div>
 );
 Layout.displayName = 'Layout';
