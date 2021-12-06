@@ -22,17 +22,35 @@ jobs:
           yarn install
           yarn build
 
-      - name: Deploy Frontend
+      - name: Create and copy out folder to GitHub source branch
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           BRANCH: source
           FOLDER: out
 
-      - name: Deploy APIs
+      - name: Copy server folder to GitHub source branch
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           BRANCH: source
           FOLDER: server
           CLEAN: false
+
+      - name: Deploy Github source branch to Digital Ocean
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{secrets.SSH_KEY}}
+          passphrase: ${{secrets.SSH_PASSPHRASE}}
+     
+          script: |
+            cd /var/www/html/group3 
+            rm -rf ./* 
+            git clone https://github.com/schultzp2020/Agile-Group-3.git
+            cd ./Agile-Group-3 
+            git checkout source 
+            cd .. 
+            mv ./Agile-Group-3/* . 
+            rm -rf ./Agile-Group-3 
