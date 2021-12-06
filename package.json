@@ -1,25 +1,60 @@
 {
-  "name": "agile-group-3",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && next export",
+    "start": "next start",
+    "type-check": "tsc --pretty --noEmit",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext ts --ext tsx --ext js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn run type-check"
+    }
+  },
+  "lint-staged": {
+    "*.@(ts|tsx)": [
+      "yarn lint",
+      "yarn format"
+    ]
+  },
   "dependencies": {
-    "typescript": "^4.5.2"
+    "next": "latest",
+    "next-compose-plugins": "^2.2.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "tslib": "^2.3.1",
+    "typescript-is": "^0.18.3"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.9"
-  },
-  "scripts": {
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/schultzp2020/Agile-Group-3.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/schultzp2020/Agile-Group-3/issues"
-  },
-  "homepage": "https://github.com/schultzp2020/Agile-Group-3#readme"
+    "@babel/core": "^7.15.5",
+    "@testing-library/react": "^11.2.5",
+    "@types/node": "^14.14.25",
+    "@types/react": "^17.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
+    "autoprefixer": "^10.3.6",
+    "eslint": "^7.19.0",
+    "eslint-config-next": "^11.1.2",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-patternfly-react": "^4.1.8",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^4.2.3",
+    "identity-obj-proxy": "^3.0.0",
+    "lint-staged": "^10.0.10",
+    "postcss": "^8.3.8",
+    "prettier": "^2.0.2",
+    "tailwindcss": "^2.2.16",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.1.3"
+  }
 }
