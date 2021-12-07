@@ -1,0 +1,42 @@
+CREATE DATABASE `AgileExpG3` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+CREATE TABLE `professor` (
+  `idprofessor` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`idprofessor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `assigned_SI` (
+  `idAssigned_SI` int NOT NULL,
+  `idCourse` int NOT NULL,
+  PRIMARY KEY (`idAssigned_SI`,`idCourse`),
+  KEY `courseID_idx` (`idCourse`),
+  CONSTRAINT `courseID` FOREIGN KEY (`idCourse`) REFERENCES `course` (`idcourse`),
+  CONSTRAINT `studentID` FOREIGN KEY (`idAssigned_SI`) REFERENCES `student` (`idstudent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `conflict` (
+  `time` int DEFAULT NULL,
+  `day` int DEFAULT NULL,
+  `student` int DEFAULT NULL,
+  KEY `student_idx` (`student`),
+  CONSTRAINT `student` FOREIGN KEY (`student`) REFERENCES `student` (`idstudent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `course` (
+  `idcourse` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `time` int DEFAULT NULL,
+  `days` set('M','T','W','TH','F') DEFAULT NULL,
+  `prof` int DEFAULT NULL,
+  PRIMARY KEY (`idcourse`),
+  KEY `prof_idx` (`prof`),
+  CONSTRAINT `prof` FOREIGN KEY (`prof`) REFERENCES `professor` (`idprofessor`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `student` (
+  `idstudent` int NOT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `totalhours` int DEFAULT '0',
+  PRIMARY KEY (`idstudent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
