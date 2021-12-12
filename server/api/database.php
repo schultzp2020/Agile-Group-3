@@ -1,9 +1,9 @@
 <?php
 // Secret database details
 abstract class DBDeets {
-  const DB_NAME = '';
-  const DB_USER = '';
-  const DB_PW = '';
+  const DB_NAME = 'AgileExpG3';
+  const DB_USER = 'user3';
+  const DB_PW = 'userpwd3';
   const DB_SILENT_FAIL = True;
 }
 
