@@ -27,18 +27,15 @@ class Course {
 
   private function validate_course($time, $days, $name) {
     if(!is_int($time)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Time is not a number" }');
+      throw new Exception('Time is not a number');
     }
   
     if(!is_string($days)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Days is not a string" }');
+      throw new Exception('Days is not a string');
     }
   
     if(!is_string($name)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Name is not a string" }');
+      throw new Exception('Name is not a string');
     }
   
     // Split days into array
@@ -47,8 +44,7 @@ class Course {
   
     foreach($exploded_days as $day) {
       if(!($day === 'M' || $day === 'T' || $day === 'W' || $day === 'Th' || $day === 'F')) {
-        http_response_code(400); 
-        die('{ "success": false, "error": "Days is not a string array" }');
+        throw new Exception('Day is not M, T, W, Th, or F');
       }
     }
   }
@@ -81,18 +77,15 @@ class Conflict {
 
   private function validate_conflict($student, $time, $day) {
     if(!is_int($student)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Student is not a number" }');
+      throw new Exception('Student is not a number');
     }
 
     if(!is_int($time)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Time is not a number" }');
+      throw new Exception('Time is not a number');
     }
 
     if(!($day >= 0 and $day < 5)) {
-      http_response_code(400); 
-      die('{ "success": false, "error": "Day is not a number between 0-4" }');
+      throw new Exception('Day is not a number between 0-4');
     }
   }
 }

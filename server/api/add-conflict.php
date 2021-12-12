@@ -35,12 +35,18 @@ header('Content-Type: application/json;');
 $encoded_body = file_get_contents('php://input');
 $body = json_decode($encoded_body);
 
-$conflict = new Conflict($body->student, $body->time, $body->day);
+try {
+  $conflict = new Conflict($body->student, $body->time, $body->day);
 
-$db = connectToDB();
+  $db = connectToDB();
 
-add_conflict($course);
+  add_conflict($course);
 
-// Close the database connection
-$db->close();
+  // Close the database connection
+  $db->close();
+} catch(Exception $e) {
+  http_response_code(400);
+  die("{ \"success\": false, \"error\": \"{$e->getMessage()}\" }");
+}
+
 ?>
