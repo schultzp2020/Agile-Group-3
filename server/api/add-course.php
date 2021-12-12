@@ -35,12 +35,17 @@ header('Content-Type: application/json;');
 $encoded_body = file_get_contents('php://input');
 $body = json_decode($encoded_body);
 
-$course = new Course($body->time, $body->days, $body->name);
+try {
+  $course = new Course($body->time, $body->days, $body->name);
 
-$db = connectToDB();
+  $db = connectToDB();
 
-add_course($course);
+  add_course($course);
 
-// Close the database connection
-$db->close();
+  // Close the database connection
+  $db->close();
+} catch(Exception $e) {
+  http_response_code(400);
+  die("{ \"success\": false, \"error\": \"{$e->getMessage()}\" }");
+}
 ?>
