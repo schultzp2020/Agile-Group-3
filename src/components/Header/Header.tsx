@@ -13,14 +13,24 @@ const pages: Page[] = [
 ];
 
 export const Header: React.FC = () => (
-  <ul className="m-4 flex justify-evenly">
-    {pages.map(({ name, href }) => (
-      <li key={name}>
-        <Link href={href}>
-          <a className="p-2 border-2 border-black">{name}</a>
-        </Link>
-      </li>
-    ))}
-  </ul>
+  <div className="bg-blue-800 p-8 border-2 border-black">
+    <div className="bg-blue-900 p-4">
+      <div className="flex items-center justify-center brightness-200 bg-blend-lighten">
+        <img src="\images\UWStout.png" alt="Stout logo" width="200"></img>
+        <img src="\images\UWStoutImage.jpg" alt="Stout logo" width="200"></img>
+      </div>
+      <ul className="m-4 flex justify-evenly">
+        {pages.map(({ name, href }) => (
+          <li key={name}>
+            <Link href={href}>
+              <a className="bg-blue-700 hover:bg-blue-300 flex items-center text-white p-4 border-2 border-black rounded-lg">
+                {name}
+              </a>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
 );
 Header.displayName = 'Header';
