@@ -13,11 +13,11 @@ function connectToDB() {
   return $db;
 }
 
-function add_course($course) {
+function add_course($time, $days, $name) {
   $query = "INSERT INTO course (time, days, name) 
   VALUES (?, ?, ?);";
   $ptype = "iss";
-  $stmt = complexQueryParam($db, $query, $ptype, $course->get_time(), $course->get_days(), $course->get_name());
+  $stmt = complexQueryParam($db, $query, $ptype, $time, $days, $name);
 
   if($stmt == NULL) {
     http_response_code(400);
@@ -28,6 +28,34 @@ function add_course($course) {
   }
 }
 
+function validate_course($time, $days, $name) {
+  if(!is_int($time)) {
+    http_response_code(400); 
+    die('{ "success": false, "error": "Time is not a number" }');
+  }
+
+  if(!is_string($days)) {
+    http_response_code(400); 
+    die('{ "success": false, "error": "Days is not a string" }');
+  }
+
+  if(!is_string($name)) {
+    http_response_code(400); 
+    die('{ "success": false, "error": "Name is not a string" }');
+  }
+
+  // Split days into array
+  // e.g. 'M,W,F' into ['M','W','F']
+  $exploded_days = explode(',', $days);
+
+  foreach($exploded_days as $day) {
+    if(!($day === 'M' || $day === 'T' || $day === 'W' || $day === 'Th' || $day === 'F')) {
+      http_response_code(400); 
+      die('{ "success": false, "error": "Days is not a string array" }');
+    }
+  }
+}
+
 // Customize HTTP header
 header('Content-Type: application/json;');
 
@@ -35,17 +63,12 @@ header('Content-Type: application/json;');
 $encoded_body = file_get_contents('php://input');
 $body = json_decode($encoded_body);
 
-try {
-  $course = new Course($body->time, $body->days, $body->name);
+validate_course($body->time, $body->days, $body->name);
 
-  $db = connectToDB();
+$db = connectToDB();
 
-  add_course($course);
+add_course($body->time, $body->days, $body->name);
 
-  // Close the database connection
-  $db->close();
-} catch(Exception $e) {
-  http_response_code(400);
-  die("{ \"success\": false, \"error\": \"{$e->getMessage()}\" }");
-}
+// Close the database connection
+$db->close();
 ?>
