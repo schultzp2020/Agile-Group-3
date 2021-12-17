@@ -1,34 +1,18 @@
 <?php
-// include files
 include "database.php";
-include "classes.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
-  }
-  return $db;
+function add_course(PDO $conn, int $time, string $days, string $name) {
+  $stmt = $conn->prepare("INSERT INTO course (time, days, name) 
+    VALUES (:time, :days, :name);");
+
+  $stmt->bindParam('time', $time, PDO::PARAM_INT);
+  $stmt->bindParam('days', $days, PDO::PARAM_STR);
+  $stmt->bindParam('name', $name, PDO::PARAM_STR);
+
+  $stmt->execute();
 }
 
-function add_course($time, $days, $name) {
-  $query = "INSERT INTO course (time, days, name) 
-  VALUES (?, ?, ?);";
-  $ptype = "iss";
-  $stmt = complexQueryParam($db, $query, $ptype, $time, $days, $name);
-
-  if($stmt == NULL) {
-    http_response_code(400);
-    die("{ \"success\": false, \"error\": \"The course was unsuccessfully added into the database!\" }");
-  } else {
-    echo "{ \"success\": true, \"status\": \"The course was successfully added into the database!\" }";
-    $stmt->close();
-  }
-}
-
-function validate_course($time, $days, $name) {
+function validate_course(int $time, string $days, string $name) {
   if(!is_int($time)) {
     http_response_code(400); 
     die('{ "success": false, "error": "Time is not a number" }');
@@ -56,19 +40,21 @@ function validate_course($time, $days, $name) {
   }
 }
 
-// Customize HTTP header
 header('Content-Type: application/json;');
 
-// Retrieve and decode Data
-$encoded_body = file_get_contents('php://input');
-$body = json_decode($encoded_body);
+$time = $_POST['time'];
+$days = $_POST['days'];
+$name = $_POST['name'];
 
-validate_course($body->time, $body->days, $body->name);
+validate_course($time, $days, $name);
 
-$db = connectToDB();
-
-add_course($body->time, $body->days, $body->name);
-
-// Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  add_course($conn, $time, $days, $name);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+} finally {
+  $conn = null;
+}
 ?>

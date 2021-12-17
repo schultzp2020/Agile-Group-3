@@ -1,46 +1,45 @@
 <?php
-// include files
 include "database.php";
-include "classes.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
+class Course {
+  public int $course_id;
+  public int $name;
+  public string $time;
+  public int $days;
+  public int $si;
+
+  public function __construct(int $course_id, string $name, int $time, int $days, int $si) {
+    $this->course_id = $course_id;
+    $this->name = $name;
+    $this->time = $time;
+    $this->days = $days;
+    $this->si = $si;
   }
-  return $db;
 }
 
-function view_courses() {
-  $query = "SELECT * FROM course";
-  $stmt = simpleQuery($db, $query);
-  if($stmt == NULL) {
-    http_response_code(500);
-    die("{ \"error\": " . json_encode($db->error) . " }");
+function view_courses(PDO $conn) {
+  $stmt = $conn->prepare("SELECT * FROM course");
+
+  $stmt->execute();
+
+  $courseList = array();
+
+  foreach ($stmt as $row)
+  {
+    $course = new Course($row['courseid'], $row['name'], $row['time'], $row['days'], $row['si']);
+    array_push($courseList, $course);
   }
 
-  $stmt->bind_result($course->course_id, $course->time, $course->days, $course->name, $course->si);
-
-  $list = array();
-  while($stmt->fetch()) {
-    $newCourse = json_encode($course);
-    array_push($list, json_decode($newCourse));
-  }
-
-  $stmt->close();
-
-  echo json_encode($list);
+  echo json_encode($courseList);
 }
 
-// Customize HTTP header
-header('Content-Type: application/json;');
-
-$db = connectToDB();
-
-view_courses();
-
-  // Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  view_courses($conn);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+} finally {
+  $conn = null;
+}
 ?>
