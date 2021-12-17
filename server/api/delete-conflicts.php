@@ -12,7 +12,9 @@ function delete_conflicts(PDO $conn, int $student) {
 
 header('Content-Type: application/json;');
 
-$student = $_POST['student'];
+$body = json_decode(file_get_contents('php://input'));
+
+$student = $body['student'];
 
 if (!is_int($student)) {
   http_response_code(400); 
@@ -24,7 +26,7 @@ try {
   delete_conflicts($conn, $student);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

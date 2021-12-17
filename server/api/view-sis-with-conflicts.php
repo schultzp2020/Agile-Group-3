@@ -16,7 +16,7 @@ class SI {
 }
 
 function view_sis_with_conflicts(PDO $conn) {
-  $stmt = $conn->prepare("SELECT student.id, student.name, conflict.time, conflict.day FROM student
+  $stmt = $conn->prepare("SELECT * FROM student
     LEFT JOIN conflict ON conflict.student = student.studentid");
 
   $stmt->execute();
@@ -25,7 +25,12 @@ function view_sis_with_conflicts(PDO $conn) {
 
   foreach ($stmt as $row)
   {
-    $si = new SI($row['student.id'], $row['student.name'], $row['conflict.time'], $row['conflict.day']);
+    $student_id = intval($row['studentid']);
+    $name = $row['name'];
+    $time = intval($row['time']);
+    $day = intval($row['day']);
+
+    $si = new SI($student_id, $name, $time, $day);
     array_push($siList, $si);
   }
 
@@ -37,7 +42,7 @@ try {
   view_sis_with_conflicts($conn);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

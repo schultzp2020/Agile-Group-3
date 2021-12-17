@@ -26,7 +26,13 @@ function view_courses(PDO $conn) {
 
   foreach ($stmt as $row)
   {
-    $course = new Course($row['courseid'], $row['name'], $row['time'], $row['days'], $row['si']);
+    $course_id = intval($row['courseid']);
+    $name = intval($row['name']);
+    $time = $row['time'];
+    $days = intval($row['days']);
+    $si = intval($row['SI']);
+    
+    $course = new Course($course_id, $name, $time, $days, $si);
     array_push($courseList, $course);
   }
 
@@ -38,7 +44,7 @@ try {
   view_courses($conn);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

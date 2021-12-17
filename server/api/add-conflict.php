@@ -31,9 +31,11 @@ function validate_conflict(int $student, int $time, int $day) {
 
 header('Content-Type: application/json;');
 
-$student = $_POST['student'];
-$time = $_POST['time'];
-$day = $_POST['day'];
+$body = json_decode(file_get_contents('php://input'));
+
+$student = $body['student'];
+$time = $body['time'];
+$day = $body['day'];
 
 validate_conflict($student, $time, $day);
 
@@ -42,7 +44,7 @@ try {
   add_conflict($conn, $student, $time, $day);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }
