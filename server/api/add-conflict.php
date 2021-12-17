@@ -33,9 +33,9 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$student = $body['student'];
-$time = $body['time'];
-$day = $body['day'];
+$student = $body->student;
+$time = $body->time;
+$day = $body->day;
 
 validate_conflict($student, $time, $day);
 
