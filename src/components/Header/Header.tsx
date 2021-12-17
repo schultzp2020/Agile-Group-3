@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import StoutTittle from '@public/images/StoutTittle.png';
+import StoutLogo from '@public/images/StoutLogo.png';
 
 export interface Page {
   name: string;
@@ -16,8 +18,8 @@ export const Header: React.FC = () => (
   <div className="bg-blue-800 p-8 border-2 border-black">
     <div className="bg-blue-900 p-4">
       <div className="flex items-center justify-center brightness-200 bg-blend-lighten">
-        <img src="\images\UWStout.png" alt="Stout logo" width="200"></img>
-        <img src="\images\UWStoutImage.jpg" alt="Stout logo" width="200"></img>
+        <img src={StoutTittle.src} alt="Stout logo" width="200"></img>
+        <img src={StoutLogo.src} alt="Stout logo" width="200"></img>
       </div>
       <ul className="m-4 flex justify-evenly">
         {pages.map(({ name, href }) => (
