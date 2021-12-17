@@ -53,7 +53,7 @@ try {
   add_course($conn, $time, $days, $name);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

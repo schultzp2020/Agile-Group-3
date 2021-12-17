@@ -25,7 +25,12 @@ function view_sis_with_conflicts(PDO $conn) {
 
   foreach ($stmt as $row)
   {
-    $si = new SI($row['student.id'], $row['student.name'], $row['conflict.time'], $row['conflict.day']);
+    $student_id = intval($row['student.id']);
+    $name = $row['student.name'];
+    $time = intval($row['conflict.time']);
+    $day = intval($row['conflict.day']);
+
+    $si = new SI($student_id, $name, $time, $day);
     array_push($siList, $si);
   }
 
@@ -37,7 +42,7 @@ try {
   view_sis_with_conflicts($conn);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

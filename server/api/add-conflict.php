@@ -42,7 +42,7 @@ try {
   add_conflict($conn, $student, $time, $day);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }

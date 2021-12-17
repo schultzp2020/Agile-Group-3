@@ -24,7 +24,7 @@ try {
   delete_conflicts($conn, $student);
 } catch(PDOException $e) {
     http_response_code(500); 
-    die("{ \"success\": false, \"error\": \"$e->getMessage()\" }");
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
 } finally {
   $conn = null;
 }
