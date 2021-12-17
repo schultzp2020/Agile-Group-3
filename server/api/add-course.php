@@ -42,9 +42,11 @@ function validate_course(int $time, string $days, string $name) {
 
 header('Content-Type: application/json;');
 
-$time = $_POST['time'];
-$days = $_POST['days'];
-$name = $_POST['name'];
+$body = json_decode(file_get_contents('php://input'));
+
+$time = $body['time'];
+$days = $body['days'];
+$name = $body['name'];
 
 validate_course($time, $days, $name);
 

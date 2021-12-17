@@ -15,8 +15,10 @@ function attach_si(PDO $conn, int $student_id, int $course_id) {
 
 header('Content-Type: application/json;');
 
-$student_id= $_POST['studentId'];
-$course_id = $_POST['courseId'];
+$body = json_decode(file_get_contents('php://input'));
+
+$student_id= $body['studentId'];
+$course_id = $body['courseId'];
 
 if (!is_int($student_id)) {
   http_response_code(400); 

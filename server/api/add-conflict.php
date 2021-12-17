@@ -31,9 +31,11 @@ function validate_conflict(int $student, int $time, int $day) {
 
 header('Content-Type: application/json;');
 
-$student = $_POST['student'];
-$time = $_POST['time'];
-$day = $_POST['day'];
+$body = json_decode(file_get_contents('php://input'));
+
+$student = $body['student'];
+$time = $body['time'];
+$day = $body['day'];
 
 validate_conflict($student, $time, $day);
 
