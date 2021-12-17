@@ -1,48 +1,33 @@
 <?php
-// include files
 include "database.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
-  }
-  return $db;
+function delete_course(PDO $conn, int $course_id) {
+  $stmt = $conn->prepare("DELETE FROM course
+    WHERE courseid = :courseid;");
+
+  $stmt->bindParam('courseid', $course_id, PDO::PARAM_INT);
+
+  $stmt->execute();
 }
 
-function delete_course($course_id) {
-  $query = "DELETE FROM course
-  WHERE courseid = ?;";
-  $ptype = "i";
-  $stmt = complexQueryParam($db, $query, $ptype, $course_id);
-
-  if($stmt == NULL) {
-    http_response_code(400);
-    die("{ \"success\": false, \"error\": \"The course was unsuccessfully deleted from the database!\" }");
-  } else {
-    echo "{ \"success\": true, \"status\": \"The course was successfully deleted from the database!\" }";
-    $stmt->close();
-  }
-}
-
-// Customize HTTP header
 header('Content-Type: application/json;');
 
-// Retrieve and decode Data
-$encoded_body = file_get_contents('php://input');
-$body = json_decode($encoded_body);
+$body = json_decode(file_get_contents('php://input'));
 
-if (!is_int($body->course_id)) {
+$course_id = $body['courseId'];
+
+if (!is_int($course_id)) {
   http_response_code(400); 
   die('{ "success": false, "error": "Course ID is not an integer" }');
 }
 
-$db = connectToDB();
-
-delete_course($body->course_id);
-
-// Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  delete_course($conn, $course_id);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
+} finally {
+  $conn = null;
+}
 ?>

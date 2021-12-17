@@ -1,34 +1,18 @@
 <?php
-// include files
 include "database.php";
-include "classes.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
-  }
-  return $db;
+function add_conflict(PDO $conn, int $student, int $time, int $day) {
+  $stmt = $conn->prepare("INSERT INTO conflict (student, time, day) 
+    VALUES (:student, :time, :day);");
+
+  $stmt->bindParam('student', $student, PDO::PARAM_INT);
+  $stmt->bindParam('time', $time, PDO::PARAM_INT);
+  $stmt->bindParam('day', $day, PDO::PARAM_INT);
+
+  $stmt->execute();
 }
 
-function add_conflict($student, $time, $day) {
-  $query = "INSERT INTO conflict (student, time, day) 
-  VALUES (?, ?, ?);";
-  $ptype = "iii";
-  $stmt = complexQueryParam($db, $query, $ptype, $student, $time, $day);
-
-  if($stmt == NULL) {
-    http_response_code(400);
-    die("{ \"success\": false, \"error\": \"The conflict was unsuccessfully added into the database!\" }");
-  } else {
-    echo "{ \"success\": true, \"status\": \"The conflict was successfully added into the database!\" }";
-    $stmt->close();
-  }
-}
-
-function validate_conflict($student, $time, $day) {
+function validate_conflict(int $student, int $time, int $day) {
   if(!is_int($student)) {
     http_response_code(400); 
     die('{ "success": false, "error": "Student is not a number" }');
@@ -45,19 +29,23 @@ function validate_conflict($student, $time, $day) {
   }
 }
 
-// Customize HTTP header
 header('Content-Type: application/json;');
 
-// Retrieve and decode Data
-$encoded_body = file_get_contents('php://input');
-$body = json_decode($encoded_body);
+$body = json_decode(file_get_contents('php://input'));
 
-validate_conflict($body->student, $body->time, $body->day);
+$student = $body['student'];
+$time = $body['time'];
+$day = $body['day'];
 
-$db = connectToDB();
+validate_conflict($student, $time, $day);
 
-add_conflict($body->student, $body->time, $body->day);
-
-  // Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  add_conflict($conn, $student, $time, $day);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
+} finally {
+  $conn = null;
+}
 ?>

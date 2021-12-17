@@ -1,47 +1,49 @@
 <?php
-// include files
 include "database.php";
-include "classes.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
+class SI {
+  public int $student_id;
+  public string $name;
+  public int $time;
+  public int $day;
+
+  public function __construct(int $student_id, string $name, int $time, int $day) {
+    $this->student_id = $student_id;
+    $this->name = $name;
+    $this->time = $time;
+    $this->day = $day;
   }
-  return $db;
 }
 
-function view_sis_with_conflicts() {
-  $query = "SELECT student.id, student.name, conflict.time, conflict.day FROM student
-  LEFT JOIN conflict ON conflict.student = student.studentid";
-  $stmt = simpleQuery($db, $query);
-  if($stmt == NULL) {
-    http_response_code(500);
-    die("{ \"error\": " . json_encode($db->error) . " }");
+function view_sis_with_conflicts(PDO $conn) {
+  $stmt = $conn->prepare("SELECT * FROM student
+    LEFT JOIN conflict ON conflict.student = student.studentid");
+
+  $stmt->execute();
+
+  $siList = array();
+
+  foreach ($stmt as $row)
+  {
+    $student_id = intval($row['studentid']);
+    $name = $row['name'];
+    $time = intval($row['time']);
+    $day = intval($row['day']);
+
+    $si = new SI($student_id, $name, $time, $day);
+    array_push($siList, $si);
   }
 
-  $stmt->bind_result($student->student_id, $student->name, $student->time, $student->day);
-
-  $list = array();
-  while($stmt->fetch()) {
-    $newStudent = json_encode($student);
-    array_push($list, json_decode($newStudent));
-  }
-
-  $stmt->close();
-
-  echo json_encode($list);
+  echo json_encode($siList);
 }
 
-// Customize HTTP header
-header('Content-Type: application/json;');
-
-$db = connectToDB();
-
-view_sis_with_conflicts();
-
-  // Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  view_sis_with_conflicts($conn);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
+} finally {
+  $conn = null;
+}
 ?>

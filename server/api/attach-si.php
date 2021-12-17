@@ -1,55 +1,42 @@
 <?php
 // include files
 include "database.php";
-include "classes.php";
 
-function connectToDB() {
-  // Establish the database connection
-  $db = connectToDatabase(DBDeets::DB_NAME);
-  if($db->connect_errno) {
-    // http_response_code(500);
-    die("{ \"error\": " . json_encode($db->connect_error) . " }");
-  }
-  return $db;
+function attach_si(PDO $conn, int $student_id, int $course_id) {
+  $stmt = $conn->prepare("UPDATE course
+    SET SI = :studentid
+    WHERE courseid = :courseid;");
+
+  $stmt->bindParam('studentid', $student_id, PDO::PARAM_INT);
+  $stmt->bindParam('courseid', $course_id, PDO::PARAM_INT);
+
+  $stmt->execute();
 }
 
-function attach_si($student_id, $course_id) {
-  $query = "UPDATE course
-  SET SI = ?
-  WHERE courseid = ?;";
-  $ptype = "ii";
-  $stmt = complexQueryParam($db, $query, $ptype, $student_id, $course_id);
-
-  if($stmt == NULL) {
-    http_response_code(400);
-    die("{ \"success\": false, \"error\": \"The course was unsuccessfully updated in the database!\" }");
-  } else {
-    echo "{ \"success\": true, \"status\": \"The course was successfully updated in the database!\" }";
-    $stmt->close();
-  }
-}
-
-// Customize HTTP header
 header('Content-Type: application/json;');
 
-// Retrieve and decode Data
-$encoded_body = file_get_contents('php://input');
-$body = json_decode($encoded_body);
+$body = json_decode(file_get_contents('php://input'));
 
-if (!is_int($body->course_id)) {
-  http_response_code(400); 
-  die('{ "success": false, "error": "Course ID is not an integer" }');
-}
+$student_id= $body['studentId'];
+$course_id = $body['courseId'];
 
-if (!is_int($body->student_id)) {
+if (!is_int($student_id)) {
   http_response_code(400); 
   die('{ "success": false, "error": "Student ID is not an integer" }');
 }
 
-$db = connectToDB();
+if (!is_int($course_id)) {
+  http_response_code(400); 
+  die('{ "success": false, "error": "Course ID is not an integer" }');
+}
 
-attach_si($body->student_id, $body->course_id);
-
-// Close the database connection
-$db->close();
+try {
+  $conn = connect_to_database();
+  attach_si($conn, $student_id, $course_id);
+} catch(PDOException $e) {
+    http_response_code(500); 
+    die("{ \"success\": false, \"error\": \"" . $e->getMessage() . "\" }");
+} finally {
+  $conn = null;
+}
 ?>
