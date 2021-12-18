@@ -14,7 +14,7 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$student = $body['student'];
+$student = $body->student;
 
 if (!is_int($student)) {
   http_response_code(400); 

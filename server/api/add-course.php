@@ -44,9 +44,9 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$time = $body['time'];
-$days = $body['days'];
-$name = $body['name'];
+$time = $body->time;
+$days = $body->days;
+$name = $body->name;
 
 validate_course($time, $days, $name);
 

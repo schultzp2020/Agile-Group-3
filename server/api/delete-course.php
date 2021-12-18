@@ -14,7 +14,7 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$course_id = $body['courseId'];
+$course_id = $body->courseId;
 
 if (!is_int($course_id)) {
   http_response_code(400); 
