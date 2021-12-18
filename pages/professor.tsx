@@ -1,90 +1,69 @@
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const hours = [
+  '8:00-8:55',
+  '9:05-10:00',
+  '10:10-11:05',
+  '11:15-12:10',
+  '12:20-1:15',
+  '1:25-2:20',
+  '2:30-3:25',
+  '3:35-4:30'
+];
+
+const textInputs = ['Course ID:', 'Course Name:'];
 
 /**
- * {@link Home} implements the main viewer for the webpage root
+ * {@link Professor} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const Home: React.FC = () => (
-  <div className="h-screen w-screen p-4">
-    <h1 className="text-center"> Course Information Form </h1>
+export const Professor: React.FC = () => (
+  <div className="bg-blue-800 p-4 h-screen">
+    <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
+      Professor - Course Creation
+    </h1>
 
-    <div className="flex h-screen justify-center items-center">
-      <form className="w-full max-w-sm">
-        <div className="md:flex md:items-center mb-6">
-          <div className="md:w-1/3">
-            <label
-              className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-              htmlFor="inline-course-id"
-            >
-              Course ID:
-            </label>
-          </div>
-          <div className="md:w-2/3">
-            <input
-              className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="inline-course-id"
-              type="text"
-            />
-          </div>
-        </div>
+    <p className="text-lg text-blue-200 text-center m-2">Course Information Form</p>
 
-        <div className="md:flex md:items-center mb-6">
-          <div className="md:w-1/3">
-            <label
-              className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-              htmlFor="inline-course-name"
-            >
-              Course Name:
-            </label>
-          </div>
-          <div className="md:w-2/3">
+    <div className="bg-blue-900 flex-center p-4 border-2 border-black rounded-lg flex md:justify-center">
+      <form className="bg-blue-800 flex-center p-4 border-2 border-black rounded-lg max-w-sm accent-gray-800">
+        {textInputs.map((textInput) => (
+          <div key={textInput} className="mb-6 flex justify-between w-full">
+            <label className="block text-blue-200 font-bold md:text-left mb-1">{textInput}</label>
             <input
-              className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="inline-course-name"
+              className="bg-blue-200 appearance-none border-2 border-blue-900 rounded w-full py-2 px-4 text-blue-800  leading-tight focus:outline-none focus:bg-white focus:border-blue-900"
               type="text"
               placeholder=""
             />
           </div>
-        </div>
+        ))}
 
-        <div className="inline-block relative w-64 mb-4">
-          <label
-            className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-            htmlFor="select-time"
-          >
-            Select Start Time:
-          </label>
-          <select
-            className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-            id="select-time"
-          >
-            <option></option>
-            <option>8:00-8:55</option>
-            <option>9:05-10:00</option>
-            <option>10:10-11:05</option>
-            <option>11:15-12:10</option>
-            <option>12:20-1:15</option>
-            <option>1:25-2:20</option>
-            <option>2:30-3:25</option>
-            <option>3:35-4:30</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg
-              className="fill-current h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
+        <div className="md:flex md:content-center mb-8">
+          <div>
+            <label
+              className="block text-blue-200 font-bold md:text-right mb-1 md:mb-0 pr-4"
+              htmlFor="select-time"
             >
-              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-            </svg>
+              Select Start Time:
+            </label>
+          </div>
+          <div className="max-w-sm">
+            <select
+              className="block appearance-none w-full bg-blue-200 border border-blue-900 focus:bg-white hover:border-blue-500 px-6 py-2 pr-20 rounded shadow leading-tight focus:outline-none focus:shadow-outline "
+              id="select-time"
+            >
+              <option></option>
+              {hours.map((hour) => (
+                <option key={hour}>{hour}</option>
+              ))}
+            </select>
           </div>
         </div>
-
-        <div className="md:flex md:items-center mb-6">
+        <div className="md:flex md:items-center mb-6 flex justify-center items-center">
           <div className="flex space-x-4 justify-between items-start border-2 border-black py-4 px-8">
             {days.map((day) => (
               <div key={day} className="divide-y divide-light-blue-400">
-                <h1 className="text-center text-lg">{day}</h1>
-                <label key={`${day}`} className="flex justify-between items-center">
+                <h1 className="text-center text-lg block text-blue-200">{day}</h1>
+                <label key={`${day}`} className="flex justify-between items-center border-blue-800">
                   <input type="checkbox" name={`${day}`} />
                 </label>
               </div>
@@ -92,21 +71,18 @@ export const Home: React.FC = () => (
           </div>
         </div>
 
-        <div className="md:flex md:items-center">
-          <div className="md:w-1/3"></div>
-          <div className="md:w-2/3">
-            <button
-              className="shadow bg-gray-500 hover:bg-gray-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-              type="button"
-            >
-              Submit
-            </button>
-          </div>
+        <div className="md:flex md:items-center flex justify-center items-center">
+          <button
+            className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+            type="button"
+          >
+            Submit
+          </button>
         </div>
       </form>
     </div>
   </div>
 );
-Home.displayName = 'Home';
+Professor.displayName = 'Professor';
 
-export default Home;
+export default Professor;

@@ -11,40 +11,50 @@ const hours = [
 ];
 
 /**
- * {@link Home} implements the main viewer for the webpage root
+ * {@link SI} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const Home: React.FC = () => (
-  <div className="h-screen w-screen p-4">
-    <h1 className="text-2xl border-b-2 border-gray">SI - Weekly Schedule</h1>
+export const SI: React.FC = () => (
+  <div className="bg-blue-800 p-4 h-screen">
+    <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
+      SI - Weekly Schedule
+    </h1>
 
-    <p className="text-lg">Select class hours that have a conflict.</p>
+    <p className="text-lg text-blue-200 text-center m-2">
+      Select class hours that have a conflict.
+    </p>
 
-    <form>
-      <div className="flex space-x-4 justify-between items-start border-2 border-black py-4 px-8">
+    <form className="bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200 accent-gray-800">
+      <div className="flex space-x-4 justify-between items-start py-4 px-8">
         {days.map((day) => (
-          <div key={day} className="divide-y divide-light-blue-400">
+          <div
+            key={day}
+            className="divide-y divide-black bg-blue-800 flex-center border-2 border-black rounded-lg"
+          >
             <h1 className="text-center text-lg">{day}</h1>
             {hours.map((hour) => (
-              <div key={`${day}-${hour}`} className="flex justify-between items-center">
+              <div
+                key={`${day}-${hour}`}
+                className="p-2 flex justify-between items-center bg-blue-800 flex-center"
+              >
                 <span className="pr-2">{hour}</span>
-                <select className="border-2 border-gray">
-                  <option value="blank"></option>
-                  <option value="Academic Conflict">Academic Conflict</option>
-                  <option value="Personal Conflict">Personal Conflict</option>
-                </select>
+                <input type="checkbox" />
               </div>
             ))}
           </div>
         ))}
       </div>
-      <div>
-        <p>Click "Submit" button to confirm.</p>
-        <input type="submit" value="Submit"></input>
+      <div className="m-4 md:flex md:items-center flex justify-center items-center">
+        <button
+          className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+          type="button"
+        >
+          Submit
+        </button>
       </div>
     </form>
   </div>
 );
-Home.displayName = 'Home';
+SI.displayName = 'SI';
 
-export default Home;
+export default SI;
