@@ -33,9 +33,14 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$student = $body->student;
-$time = $body->time;
-$day = $body->day;
+if(!(isset($body->student) && isset($body->time) && isset($body->day))) {
+  http_response_code(400); 
+  die('{ "success": false, "error": "A parameter is missing" }');
+}
+
+$student = intval($body->student);
+$time = intval($body->time);
+$day = intval($body->day);
 
 validate_conflict($student, $time, $day);
 
