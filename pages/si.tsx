@@ -46,7 +46,7 @@ export const SIPage: React.FC = () => {
     // Match everything after "-"
     const hour = name.match(/-([\s\S]*)$/)![0].substring(1);
 
-    const newClassHours = classTimes.map((classTime) => {
+    const newClassTimes = classTimes.map((classTime) => {
       if (classTime.day === day) {
         const newHours = classTime.hours.map((o) => {
           if (o.hour === hour) {
@@ -62,12 +62,10 @@ export const SIPage: React.FC = () => {
       return classTime;
     });
 
-    setClassTimes(() => newClassHours);
-  };
+    setClassTimes(() => newClassTimes);
 
-  const onSubmit = (): void => {
     if (si?.studentId) {
-      updateSI(classTimes, si.studentId).then();
+      updateSI(newClassTimes, si.studentId).then();
     }
   };
 
@@ -124,15 +122,6 @@ export const SIPage: React.FC = () => {
               ))}
             </div>
           ))}
-        </div>
-        <div className="flex items-center justify-center mb-4">
-          <button
-            className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-            type="button"
-            onClick={onSubmit}
-          >
-            Submit
-          </button>
         </div>
       </form>
     </div>
