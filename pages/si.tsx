@@ -1,4 +1,4 @@
-import type { SI, SIWithConflicts, ClassTime } from 'custom-types';
+import type { SI, ClassTime } from 'custom-types';
 import { formatDayToInt, formatHourToInt, days, hours } from '@src/functions';
 import { useState, useEffect } from 'react';
 
@@ -41,12 +41,12 @@ export const SIPage: React.FC = () => {
 
     const newClassHours = classTimes.map((classTime) => {
       if (classTime.day === day) {
-        const newHours = classTime.hours.map((object) => {
-          if (object.hour === hour) {
+        const newHours = classTime.hours.map((o) => {
+          if (o.hour === hour) {
             return { hour, active };
           }
 
-          return object;
+          return o;
         });
 
         return { day, hours: newHours };
@@ -141,10 +141,7 @@ const updateSI = async (classTimes: ClassTime[], student: number): Promise<void>
 
 const fetchSIsWithConflicts = async (): Promise<SI[]> => {
   const res = await fetch('/api/view-sis-with-conflicts.php');
-  const sisWithConflicts = (await res.json()) as SIWithConflicts[];
-
-  // Remove extra member variables
-  const sis: SI[] = sisWithConflicts.map(({ studentId, name }) => ({ studentId, name }));
+  const sis = (await res.json()) as SI[];
 
   // Sort the SIs based on studentId
   const sortedSIs = sis.sort((a, b) => a.studentId - b.studentId);
@@ -158,36 +155,22 @@ const fetchSIsWithConflicts = async (): Promise<SI[]> => {
 };
 
 const deleteConflicts = async (student: number): Promise<void> => {
-  const res = await fetch('/api/delete-conflicts.php', {
+  await fetch('/api/delete-conflicts.php', {
     method: 'Post',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ student })
   });
-
-  if (res.status !== 200) {
-    const e = await res.json();
-
-    // eslint-disable-next-line no-console
-    console.log(e);
-  }
 };
 
 const addConflicts = async (classTimes: ClassTime[], student: number): Promise<void> => {
   for (const { day, hours } of classTimes) {
     for (const { hour, active } of hours) {
       if (active) {
-        const res = await fetch('/api/add-conflict.php', {
+        await fetch('/api/add-conflict.php', {
           method: 'Post',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ student, time: formatHourToInt(hour), day: formatDayToInt(day) })
         });
-
-        if (res.status !== 200) {
-          const e = await res.json();
-
-          // eslint-disable-next-line no-console
-          console.log(e);
-        }
       }
     }
   }

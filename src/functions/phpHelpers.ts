@@ -28,6 +28,21 @@ export const formatDayToInt = (day: Day): number => {
   }
 };
 
+export const formatDayToShorthand = (day: Day): DayShorthand => {
+  switch (day) {
+    case 'Monday':
+      return 'M';
+    case 'Tuesday':
+      return 'T';
+    case 'Wednesday':
+      return 'W';
+    case 'Thursday':
+      return 'Th';
+    case 'Friday':
+      return 'F';
+  }
+};
+
 export const formatHourToInt = (hour: string): number => {
   // Match everything before "-" and remove ":"
   let time = parseInt(hour.match(/[^-]*/)![0].replace(':', ''));

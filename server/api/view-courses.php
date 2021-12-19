@@ -30,7 +30,13 @@ function view_courses(PDO $conn) {
     $name = $row['name'];
     $time = intval($row['time']);
     $days = $row['days'];
-    $si = intval($row['SI']);
+    $si = $row['SI'];
+
+    if (isset($si)) {
+      $si = intval($si);
+    } else {
+      $si = -1;
+    }
     
     $course = new Course($course_id, $name, $time, $days, $si);
     array_push($courseList, $course);
