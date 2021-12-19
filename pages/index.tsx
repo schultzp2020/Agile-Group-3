@@ -12,7 +12,7 @@ export const Home: React.FC = () => (
       <h1>SI Scheduler Tool</h1>
     </div>
     <div>
-      <div className="bg-blue-900 p-4 my-4 flex justify-evenly">
+      <div className="bg-blue-900 p-4 my-4 flex justify-evenly border-2 border-black rounded-lg">
         <img src={StoutCampus.src} alt="A Scenic View" width="75%"></img>
       </div>
     </div>
