@@ -1,20 +1,10 @@
-const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const hours = [
-  '8:00-8:55',
-  '9:05-10:00',
-  '10:10-11:05',
-  '11:15-12:10',
-  '12:20-1:15',
-  '1:25-2:20',
-  '2:30-3:25',
-  '3:35-4:30'
-];
+import { days, hours } from '@src/functions';
 
 /**
- * {@link Scheduler} implements the main viewer for the webpage root
+ * {@link SchedulerPage} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const Scheduler: React.FC = () => (
+export const SchedulerPage: React.FC = () => (
   <div className="bg-blue-800 p-4 h-screen">
     <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
       Scheduler - Weekly Schedule
@@ -49,7 +39,7 @@ export const Scheduler: React.FC = () => (
           </div>
         ))}
       </div>
-      <div className="m-4 md:flex md:items-center flex justify-center items-center">
+      <div className="flex items-center justify-center mb-4">
         <button
           className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
           type="button"
@@ -60,6 +50,6 @@ export const Scheduler: React.FC = () => (
     </form>
   </div>
 );
-Scheduler.displayName = 'Scheduler';
+SchedulerPage.displayName = 'SchedulerPage';
 
-export default Scheduler;
+export default SchedulerPage;
