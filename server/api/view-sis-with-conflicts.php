@@ -11,7 +11,7 @@ class Conflict {
   }
 }
 
-class SIWithConflict {
+class SI {
   public int $studentId;
   public string $name;
   public array $conflicts = array();
@@ -47,7 +47,7 @@ function view_sis_with_conflicts(PDO $conn) {
     if ($index > 0 && $siList[$index - 1]->studentId === $student_id) {
       $siList[$index - 1]->add_conflict($conflict);
     } else {
-      $si = new SIWithConflict($student_id, $name);
+      $si = new SI($student_id, $name);
       if ($time > 0) {
         $si->add_conflict($conflict);
       }
