@@ -2,13 +2,13 @@
 include "database.php";
 
 class SI {
-  public int $student_id;
+  public int $studentId;
   public string $name;
   public int $time;
   public int $day;
 
-  public function __construct(int $student_id, string $name, int $time, int $day) {
-    $this->student_id = $student_id;
+  public function __construct(int $studentId, string $name, int $time, int $day) {
+    $this->studentId = $studentId;
     $this->name = $name;
     $this->time = $time;
     $this->day = $day;
