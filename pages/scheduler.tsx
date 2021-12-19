@@ -1,5 +1,5 @@
 import type { Course, SI } from 'custom-types';
-import { fetchCourses, fetchSIsWithConflicts, attachSI, detachSI } from '@src/functions';
+import { fetchCourses, fetchSIs, attachSI, detachSI } from '@src/functions';
 import { useState, useEffect } from 'react';
 
 /**
@@ -15,7 +15,7 @@ export const SchedulerPage: React.FC = () => {
     fetchCourses().then((fetchedCourses) => {
       setCourses(() => fetchedCourses);
 
-      fetchSIsWithConflicts().then((fetchedSIs) => {
+      fetchSIs().then((fetchedSIs) => {
         setSIs(() => fetchedSIs);
 
         const sisNotAssigned = getSIsNotAssigned(fetchedSIs, fetchedCourses);
@@ -81,12 +81,6 @@ export const SchedulerPage: React.FC = () => {
               </div>
             </div>
             <div className="mb-6 flex flex-col items-center">
-              <div className="flex">
-                <h1 className="text-blue-200 font-bold pr-2">Current SI:</h1>
-                <p className="text-blue-200 mb-1">
-                  {sis.find(({ studentId }) => studentId === course.si)?.name}
-                </p>
-              </div>
               <label className="text-blue-200 font-bold mb-1">Select SI:</label>
               <select
                 className="bg-blue-200 border border-blue-900 focus:bg-white hover:border-blue-500 px-20 py-2 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
@@ -104,6 +98,13 @@ export const SchedulerPage: React.FC = () => {
                     {si.name}
                   </option>
                 ))}
+                <option
+                  value={`${course.courseId}-${
+                    sis.find(({ studentId }) => studentId === course.si)?.studentId
+                  }`}
+                >
+                  {sis.find(({ studentId }) => studentId === course.si)?.name}
+                </option>
               </select>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import type { FetchedCourse, Course, ClassTime, SI, FetchedSI } from 'custom-types';
+import type { FetchedCourse, Course, ClassTime, SI, FetchedSI, Day } from 'custom-types';
 import {
   formatHourToString,
   formatDaysToDayArray,
@@ -45,7 +45,7 @@ export const updateSI = async (classTimes: ClassTime[], student: number): Promis
   await addConflicts(classTimes, student);
 };
 
-export const fetchSIsWithConflicts = async (): Promise<SI[]> => {
+export const fetchSIs = async (): Promise<SI[]> => {
   const res = await fetch('/api/view-sis-with-conflicts.php');
   const fetchedSIs = (await res.json()) as FetchedSI[];
 
@@ -76,14 +76,18 @@ export const addConflicts = async (classTimes: ClassTime[], student: number): Pr
   for (const { day, hours } of classTimes) {
     for (const { hour, active } of hours) {
       if (active) {
-        await fetch('/api/add-conflict.php', {
-          method: 'Post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student, time: formatHourToInt(hour), day: formatDayToInt(day) })
-        });
+        await addConflict(student, hour, day);
       }
     }
   }
+};
+
+export const addConflict = async (student: number, hour: string, day: Day): Promise<void> => {
+  await fetch('/api/add-conflict.php', {
+    method: 'Post',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ student, time: formatHourToInt(hour), day: formatDayToInt(day) })
+  });
 };
 
 export const attachSI = async (courseId: number, studentId: number): Promise<void> => {

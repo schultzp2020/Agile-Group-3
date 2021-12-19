@@ -1,5 +1,5 @@
 import type { SI, ClassTime } from 'custom-types';
-import { fetchSIsWithConflicts, updateSI } from '@src/functions';
+import { fetchSIs, updateSI } from '@src/functions';
 import { days, hours } from '@src/objects';
 import { useState, useEffect } from 'react';
 
@@ -16,16 +16,22 @@ export const SIPage: React.FC = () => {
   const [classTimes, setClassTimes] = useState<ClassTime[]>(_classTimes);
 
   useEffect(() => {
-    fetchSIsWithConflicts().then((sis) => {
+    fetchSIs().then((sis) => {
       setAvailableSIs(() => sis);
       setSI(() => sis[0]);
+      const newClassTimes = findClassTimes(classTimes, sis[0]);
+      setClassTimes(() => newClassTimes);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSIChange = (e: React.FormEvent<HTMLSelectElement>): void => {
     const studentId = parseInt((e.target as HTMLSelectElement).value);
 
     const newSI = availableSIs.find((availableSI) => availableSI.studentId === studentId)!;
+
+    const newClassTimes = findClassTimes(classTimes, newSI);
+    setClassTimes(() => newClassTimes);
 
     setSI(() => newSI);
   };
@@ -133,5 +139,16 @@ export const SIPage: React.FC = () => {
   );
 };
 SIPage.displayName = 'SIPage';
+
+const findClassTimes = (classTimes: ClassTime[], si: SI): ClassTime[] =>
+  classTimes.map((classTime) => ({
+    day: classTime.day,
+    hours: classTime.hours.map((o) => ({
+      hour: o.hour,
+      active: si.conflicts.some(
+        (conflict) => conflict.day === classTime.day && conflict.time === o.hour
+      )
+    }))
+  }));
 
 export default SIPage;

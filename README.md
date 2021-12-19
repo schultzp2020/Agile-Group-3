@@ -29,3 +29,7 @@ npm run start
 # or
 yarn start
 ```
+
+### CI/CD
+
+[Agile Group 3 workflow](https://github.com/schultzp2020/Agile-Group-3/blob/main/.github/workflows/build-and-deploy.yaml) deploys the server to Digital Ocean.
