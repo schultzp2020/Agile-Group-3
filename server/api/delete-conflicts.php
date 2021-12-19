@@ -14,7 +14,12 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$student = $body->student;
+if(!isset($body->student)) {
+  http_response_code(400); 
+  die('{ "success": false, "error": "A parameter is missing" }');
+}
+
+$student = intval($body->student);
 
 if (!is_int($student)) {
   http_response_code(400); 

@@ -44,7 +44,12 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$time = $body->time;
+if(!(isset($body->time) && isset($body->days) && isset($body->name))) {
+  http_response_code(400); 
+  die('{ "success": false, "error": "A parameter is missing" }');
+}
+
+$time = intval($body->time);
 $days = $body->days;
 $name = $body->name;
 

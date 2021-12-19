@@ -17,8 +17,13 @@ header('Content-Type: application/json;');
 
 $body = json_decode(file_get_contents('php://input'));
 
-$student_id= $body->studentId;
-$course_id = $body->courseId;
+if(!(isset($body->studentId) && isset($body->courseId))) {
+  http_response_code(400); 
+  die('{ "success": false, "error": "A parameter is missing" }');
+}
+
+$student_id= intval($body->studentId);
+$course_id = intval($body->courseId);
 
 if (!is_int($student_id)) {
   http_response_code(400); 

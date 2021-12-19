@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import StoutTitle from '@public/images/placeholder.png';
-import StoutLogo from '@public/images/placeholder.png';
+import StoutTitle from '@public/images/StoutTitle.png';
+import StoutLogo from '@public/images/StoutLogo.png';
 
 export interface Page {
   name: string;
@@ -17,7 +17,7 @@ const pages: Page[] = [
 export const Header: React.FC = () => (
   <div className="bg-blue-800 p-4">
     <div className="bg-blue-900 p-4 border-2 border-black rounded-lg">
-      <div className="flex items-center justify-center brightness-200 bg-blend-lighten">
+      <div className="flex items-center justify-evenly brightness-200 bg-blend-lighten">
         <img src={StoutTitle.src} alt="Stout logo" width="200"></img>
         <img src={StoutLogo.src} alt="Stout logo" width="200"></img>
       </div>
