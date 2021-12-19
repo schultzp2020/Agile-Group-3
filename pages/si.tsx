@@ -1,16 +1,9 @@
-import type { SI, SIWithConflicts, ClassTime, Day } from 'custom-types';
+import type { SI, SIWithConflicts, ClassTime } from 'custom-types';
+import { formatDayToInt, formatHourToInt, days, hours } from '@src/functions';
 import { useState, useEffect } from 'react';
 
-const hours = [
-  { hour: '8:00-8:55', active: false },
-  { hour: '9:05-10:00', active: false },
-  { hour: '10:10-11:05', active: false },
-  { hour: '11:15-12:10', active: false },
-  { hour: '12:20-1:15', active: false },
-  { hour: '1:25-2:20', active: false },
-  { hour: '2:30-3:25', active: false },
-  { hour: '3:35-4:30', active: false }
-];
+const _hours = hours.map((hour) => ({ hour, active: false }));
+const _classTimes: ClassTime[] = days.map((day) => ({ day, hours: _hours }));
 
 /**
  * {@link SI} implements the main viewer for the webpage root
@@ -19,32 +12,13 @@ const hours = [
 export const SIPage: React.FC = () => {
   const [availableSIs, setAvailableSIs] = useState<SI[]>([]);
   const [si, setSI] = useState<SI | null>(null);
-  const [classTimes, setClassTimes] = useState<ClassTime[]>([
-    { day: 'Monday', hours },
-    { day: 'Tuesday', hours },
-    { day: 'Wednesday', hours },
-    { day: 'Thursday', hours },
-    { day: 'Friday', hours }
-  ]);
+  const [classTimes, setClassTimes] = useState<ClassTime[]>(_classTimes);
 
   useEffect(() => {
-    fetch('/api/view-sis-with-conflicts.php').then((res) =>
-      res.json().then((sisWithConflicts: SIWithConflicts[]) => {
-        // Remove extra member variables
-        const sis = sisWithConflicts.map(({ studentId, name }) => ({ studentId, name }));
-
-        // Sort the SIs based on studentId
-        const sortedSIs = sis.sort((a, b) => a.studentId - b.studentId);
-
-        // Remove duplicate SIs
-        const filteredSIs = sortedSIs.filter(
-          (sortedSI, index) => !index || sortedSI.studentId !== sortedSIs[index - 1].studentId
-        );
-
-        setAvailableSIs(() => filteredSIs);
-        setSI(() => filteredSIs[0]);
-      })
-    );
+    fetchSIsWithConflicts().then((sis) => {
+      setAvailableSIs(() => sis);
+      setSI(() => sis[0]);
+    });
   }, []);
 
   const onSIChange = (e: React.FormEvent<HTMLSelectElement>): void => {
@@ -144,7 +118,7 @@ export const SIPage: React.FC = () => {
             </div>
           ))}
         </div>
-        <div className="m-4 md:flex md:items-center flex justify-center items-center">
+        <div className="flex items-center justify-center mb-4">
           <button
             className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
             type="button"
@@ -159,36 +133,28 @@ export const SIPage: React.FC = () => {
 };
 SIPage.displayName = 'SIPage';
 
-const formatDay = (day: Day): number => {
-  switch (day) {
-    case 'Monday':
-      return 0;
-    case 'Tuesday':
-      return 1;
-    case 'Wednesday':
-      return 2;
-    case 'Thursday':
-      return 3;
-    case 'Friday':
-      return 4;
-  }
-};
-
-const formatTime = (hour: string): number => {
-  // Match everything before "-" and remove ":"
-  let time = parseInt(hour.match(/[^-]*/)![0].replace(':', ''));
-
-  if (time < 600) {
-    time += 1200;
-  }
-
-  return time;
-};
-
 const updateSI = async (classTimes: ClassTime[], student: number): Promise<void> => {
   await deleteConflicts(student);
 
   await addConflicts(classTimes, student);
+};
+
+const fetchSIsWithConflicts = async (): Promise<SI[]> => {
+  const res = await fetch('/api/view-sis-with-conflicts.php');
+  const sisWithConflicts = (await res.json()) as SIWithConflicts[];
+
+  // Remove extra member variables
+  const sis: SI[] = sisWithConflicts.map(({ studentId, name }) => ({ studentId, name }));
+
+  // Sort the SIs based on studentId
+  const sortedSIs = sis.sort((a, b) => a.studentId - b.studentId);
+
+  // Remove duplicate SIs
+  const filteredSIs = sortedSIs.filter(
+    (sortedSI, index) => !index || sortedSI.studentId !== sortedSIs[index - 1].studentId
+  );
+
+  return filteredSIs;
 };
 
 const deleteConflicts = async (student: number): Promise<void> => {
@@ -213,7 +179,7 @@ const addConflicts = async (classTimes: ClassTime[], student: number): Promise<v
         const res = await fetch('/api/add-conflict.php', {
           method: 'Post',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student, time: formatTime(hour), day: formatDay(day) })
+          body: JSON.stringify({ student, time: formatHourToInt(hour), day: formatDayToInt(day) })
         });
 
         if (res.status !== 200) {

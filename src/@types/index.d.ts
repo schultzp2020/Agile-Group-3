@@ -11,11 +11,26 @@ declare module 'custom-types' {
 
   export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
 
+  export type DayShorthand = 'M' | 'T' | 'W' | 'Th' | 'F';
+
   export interface ClassTime {
     day: Day;
     hours: {
       hour: string;
       active: boolean;
     }[];
+  }
+
+  export interface Course {
+    courseId: number;
+    name: string;
+    time: string;
+    days: Day[];
+    si: number;
+  }
+
+  export interface FetchedCourse extends Course {
+    time: number;
+    days: string;
   }
 }
