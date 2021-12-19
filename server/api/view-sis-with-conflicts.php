@@ -52,8 +52,8 @@ function view_sis_with_conflicts(PDO $conn) {
         $si->add_conflict($conflict);
       }
       array_push($siList, $si);
+      $index++;
     }
-    $index++;
   }
 
   echo json_encode($siList);
