@@ -1,17 +1,5 @@
 import type { Day, DayShorthand } from 'custom-types';
-
-export const days: Day[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-export const hours = [
-  '8:00-8:55',
-  '9:05-10:00',
-  '10:10-11:05',
-  '11:15-12:10',
-  '12:20-1:15',
-  '1:25-2:20',
-  '2:30-3:25',
-  '3:35-4:30'
-];
+import { hours, days } from '@src/objects';
 
 export const formatDayToInt = (day: Day): number => {
   switch (day) {
@@ -56,6 +44,9 @@ export const formatHourToInt = (hour: string): number => {
 
 export const formatHourToString = (hour: number): string =>
   hours.find((_hour) => formatHourToInt(_hour) === hour)!;
+
+export const formatDayToDay = (day: number): Day =>
+  days.find((_day) => formatDayToInt(_day) === day)!;
 
 export const formatDaysToDayArray = (days: string): Day[] => {
   const splitDays = days.split(',') as DayShorthand[];

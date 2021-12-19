@@ -1,55 +1,128 @@
-import { days, hours } from '@src/functions';
+import type { Course, SI } from 'custom-types';
+import { fetchCourses, fetchSIsWithConflicts, attachSI, detachSI } from '@src/functions';
+import { useState, useEffect } from 'react';
 
 /**
  * {@link SchedulerPage} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const SchedulerPage: React.FC = () => (
-  <div className="bg-blue-800 p-4 h-screen">
-    <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
-      Scheduler - Weekly Schedule
-    </h1>
+export const SchedulerPage: React.FC = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [sis, setSIs] = useState<SI[]>([]);
+  const [availableSIs, setAvailableSIs] = useState<SI[]>([]);
 
-    <p className="text-lg text-blue-200 text-center m-2">
-      Select SI's for class hours and lab hours.
-    </p>
+  useEffect(() => {
+    fetchCourses().then((fetchedCourses) => {
+      setCourses(() => fetchedCourses);
 
-    <form className="bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
-      <div className="flex space-x-4 justify-between items-start py-4 px-8">
-        {days.map((day) => (
+      fetchSIsWithConflicts().then((fetchedSIs) => {
+        setSIs(() => fetchedSIs);
+
+        const sisNotAssigned = getSIsNotAssigned(fetchedSIs, fetchedCourses);
+
+        setAvailableSIs(() => sisNotAssigned);
+      });
+    });
+  }, []);
+
+  const onSIChange = (e: React.FormEvent<HTMLSelectElement>): void => {
+    const value = (e.target as HTMLSelectElement).value;
+    const [courseId, studentId] = value.split('-').map((v) => parseInt(v));
+
+    if (studentId === -1) {
+      detachSI(courseId).then();
+    } else {
+      attachSI(courseId, studentId).then();
+    }
+
+    const newCourses = courses.map((course) => {
+      if (course.courseId === courseId) {
+        return { ...course, si: studentId };
+      }
+
+      return course;
+    });
+
+    setCourses(() => newCourses);
+
+    const sisNotAssigned = getSIsNotAssigned(sis, newCourses);
+
+    setAvailableSIs(() => sisNotAssigned);
+  };
+
+  return (
+    <div className="bg-blue-800 p-4 h-screen">
+      <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
+        Scheduler - Weekly Schedule
+      </h1>
+
+      <p className="text-lg text-blue-200 text-center m-2">Select SI's for class hours.</p>
+
+      <div className="overflow-auto my-4 flex">
+        {courses.map((course) => (
           <div
-            key={day}
-            className="divide-y divide-black bg-blue-800 flex-center border-2 border-black rounded-lg"
+            key={course.courseId}
+            className="border-2 border-black rounded p-4 m-2 bg-blue-900 flex flex-col justify-between"
           >
-            <h1 className="text-center text-lg">{day}</h1>
-            {hours.map((hour) => (
-              <div
-                key={`${day}-${hour}`}
-                className="p-2 flex justify-between items-center bg-blue-800 flex-center"
-              >
-                <span className="pr-2">{hour}</span>
-                <select className="bg-blue-200 border-2 border-blue-500 text-black">
-                  <option value="blank"></option>
-                  <option value="Student 1">Student 1</option>
-                  <option value="Student 2">Student 2</option>
-                  <option value="Student 3">Student 3</option>
-                </select>
+            <div>
+              <div className="flex justify-between w-60">
+                <p className="text-lg text-blue-200 p-2">{course.name}</p>
+                <p className="text-lg text-blue-200 p-2">{course.time}</p>
               </div>
-            ))}
+              <div className="p-2 my-2 border-2 border-black rounded bg-blue-800 divide-y divide-black">
+                {course.days.map((day) => (
+                  <p
+                    key={`${course.courseId}-${day}`}
+                    className="text-lg text-blue-200 text-center"
+                  >
+                    {day}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="mb-6 flex flex-col items-center">
+              <div className="flex">
+                <h1 className="text-blue-200 font-bold pr-2">Current SI:</h1>
+                <p className="text-blue-200 mb-1">
+                  {sis.find(({ studentId }) => studentId === course.si)?.name}
+                </p>
+              </div>
+              <label className="text-blue-200 font-bold mb-1">Select SI:</label>
+              <select
+                className="bg-blue-200 border border-blue-900 focus:bg-white hover:border-blue-500 px-20 py-2 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                value={`${course.courseId}-${
+                  sis.find(({ studentId }) => studentId === course.si)?.studentId || -1
+                }`}
+                onChange={onSIChange}
+              >
+                <option value={`${course.courseId}-${-1}`}></option>
+                {getAvailableSIs(availableSIs, course).map((si) => (
+                  <option
+                    key={`${course.courseId}-${si.studentId}`}
+                    value={`${course.courseId}-${si.studentId}`}
+                  >
+                    {si.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-center mb-4">
-        <button
-          className="shadow bg-blue-600 border-2 border-black hover:bg-blue-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-          type="button"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
-);
+    </div>
+  );
+};
 SchedulerPage.displayName = 'SchedulerPage';
+
+const getSIsNotAssigned = (sis: SI[], courses: Course[]): SI[] =>
+  sis.filter(({ studentId }) => !courses.some(({ si }) => studentId === si));
+
+const getAvailableSIs = (sis: SI[], course: Course): SI[] =>
+  sis.filter(
+    ({ conflicts }) =>
+      !conflicts.some((conflict) =>
+        course.days.some((day) => conflict.day === day && conflict.time === course.time)
+      )
+  );
 
 export default SchedulerPage;

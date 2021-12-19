@@ -1,1 +1,2 @@
-export * from './phpHelpers';
+export * from './fetchs';
+export * from './functions';

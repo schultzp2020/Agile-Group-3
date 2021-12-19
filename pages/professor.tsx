@@ -1,13 +1,13 @@
-import type { Course, FetchedCourse, Day } from 'custom-types';
+import type { Course, Day } from 'custom-types';
 import { useState, useEffect } from 'react';
 import {
-  formatHourToString,
-  formatDaysToDayArray,
-  days,
-  hours,
   formatHourToInt,
-  formatDayToShorthand
+  formatDayToShorthand,
+  fetchCourses,
+  deleteCourse,
+  addCourse
 } from '@src/functions';
+import { days, hours } from '@src/objects';
 
 const textInputs = ['Course Name:'];
 
@@ -179,36 +179,5 @@ export const ProfessorPage: React.FC = () => {
   );
 };
 ProfessorPage.displayName = 'ProfessorPage';
-
-const fetchCourses = async (): Promise<Course[]> => {
-  const res = await fetch('/api/view-courses.php');
-  const fetchedCourses = (await res.json()) as FetchedCourse[];
-
-  let courses = fetchedCourses.map((course) => ({
-    ...course,
-    time: formatHourToString(course.time),
-    days: formatDaysToDayArray(course.days)
-  }));
-
-  courses = courses.sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'accent' }));
-
-  return courses;
-};
-
-const deleteCourse = async (courseId: number): Promise<void> => {
-  await fetch('/api/delete-course.php', {
-    method: 'Post',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ courseId })
-  });
-};
-
-const addCourse = async (time: number, days: string, name: string): Promise<void> => {
-  await fetch('/api/add-course.php', {
-    method: 'Post',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ time, days, name })
-  });
-};
 
 export default ProfessorPage;

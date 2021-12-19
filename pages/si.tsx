@@ -1,5 +1,6 @@
 import type { SI, ClassTime } from 'custom-types';
-import { formatDayToInt, formatHourToInt, days, hours } from '@src/functions';
+import { fetchSIsWithConflicts, updateSI } from '@src/functions';
+import { days, hours } from '@src/objects';
 import { useState, useEffect } from 'react';
 
 const _hours = hours.map((hour) => ({ hour, active: false }));
@@ -132,48 +133,5 @@ export const SIPage: React.FC = () => {
   );
 };
 SIPage.displayName = 'SIPage';
-
-const updateSI = async (classTimes: ClassTime[], student: number): Promise<void> => {
-  await deleteConflicts(student);
-
-  await addConflicts(classTimes, student);
-};
-
-const fetchSIsWithConflicts = async (): Promise<SI[]> => {
-  const res = await fetch('/api/view-sis-with-conflicts.php');
-  const sis = (await res.json()) as SI[];
-
-  // Sort the SIs based on studentId
-  const sortedSIs = sis.sort((a, b) => a.studentId - b.studentId);
-
-  // Remove duplicate SIs
-  const filteredSIs = sortedSIs.filter(
-    (sortedSI, index) => !index || sortedSI.studentId !== sortedSIs[index - 1].studentId
-  );
-
-  return filteredSIs;
-};
-
-const deleteConflicts = async (student: number): Promise<void> => {
-  await fetch('/api/delete-conflicts.php', {
-    method: 'Post',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ student })
-  });
-};
-
-const addConflicts = async (classTimes: ClassTime[], student: number): Promise<void> => {
-  for (const { day, hours } of classTimes) {
-    for (const { hour, active } of hours) {
-      if (active) {
-        await fetch('/api/add-conflict.php', {
-          method: 'Post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student, time: formatHourToInt(hour), day: formatDayToInt(day) })
-        });
-      }
-    }
-  }
-};
 
 export default SIPage;
