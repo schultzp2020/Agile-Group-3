@@ -3,12 +3,12 @@ include "database.php";
 
 class Course {
   public int $courseId;
-  public int $name;
-  public string $time;
-  public int $days;
+  public string $name;
+  public int $time;
+  public string $days;
   public int $si;
 
-  public function __construct(int $courseId, string $name, int $time, int $days, int $si) {
+  public function __construct(int $courseId, string $name, int $time, string $days, int $si) {
     $this->courseId = $courseId;
     $this->name = $name;
     $this->time = $time;
@@ -27,9 +27,9 @@ function view_courses(PDO $conn) {
   foreach ($stmt as $row)
   {
     $course_id = intval($row['courseid']);
-    $name = intval($row['name']);
-    $time = $row['time'];
-    $days = intval($row['days']);
+    $name = $row['name'];
+    $time = intval($row['time']);
+    $days = $row['days'];
     $si = intval($row['SI']);
     
     $course = new Course($course_id, $name, $time, $days, $si);
