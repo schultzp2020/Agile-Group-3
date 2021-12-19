@@ -11,10 +11,10 @@ const hours = [
 ];
 
 /**
- * {@link Scheduler} implements the main viewer for the webpage root
+ * {@link SchedulerPage} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const Scheduler: React.FC = () => (
+export const SchedulerPage: React.FC = () => (
   <div className="bg-blue-800 p-4 h-screen">
     <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
       Scheduler - Weekly Schedule
@@ -60,6 +60,6 @@ export const Scheduler: React.FC = () => (
     </form>
   </div>
 );
-Scheduler.displayName = 'Scheduler';
+SchedulerPage.displayName = 'SchedulerPage';
 
-export default Scheduler;
+export default SchedulerPage;

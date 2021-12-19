@@ -13,10 +13,10 @@ const hours = [
 const textInputs = ['Course ID:', 'Course Name:'];
 
 /**
- * {@link Professor} implements the main viewer for the webpage root
+ * {@link ProfessorPage} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const Professor: React.FC = () => (
+export const ProfessorPage: React.FC = () => (
   <div className="bg-blue-800 p-4 h-screen">
     <h1 className="text-center p-2 text-2xl border-b-2 bg-blue-900 flex-center border-2 border-black rounded-lg text-blue-200">
       Professor - Course Creation
@@ -83,6 +83,6 @@ export const Professor: React.FC = () => (
     </div>
   </div>
 );
-Professor.displayName = 'Professor';
+ProfessorPage.displayName = 'ProfessorPage';
 
-export default Professor;
+export default ProfessorPage;

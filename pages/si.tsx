@@ -1,24 +1,5 @@
+import type { SI, SIWithConflicts, ClassTime, Day } from 'custom-types';
 import { useState, useEffect } from 'react';
-
-export interface SI {
-  studentId: number;
-  name: string;
-}
-
-export interface SIWithConflicts extends SI {
-  time: 0 | 800 | 905 | 1010 | 1115 | 1220 | 1325 | 1430 | 1535;
-  day: 0 | 1 | 2 | 3 | 4;
-}
-
-export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
-
-export interface ClassTime {
-  day: Day;
-  hours: {
-    hour: string;
-    active: boolean;
-  }[];
-}
 
 const hours = [
   { hour: '8:00-8:55', active: false },
@@ -35,7 +16,7 @@ const hours = [
  * {@link SI} implements the main viewer for the webpage root
  * @returns React function component
  */
-export const SI: React.FC = () => {
+export const SIPage: React.FC = () => {
   const [availableSIs, setAvailableSIs] = useState<SI[]>([]);
   const [si, setSI] = useState<SI | null>(null);
   const [classTimes, setClassTimes] = useState<ClassTime[]>([
@@ -176,9 +157,9 @@ export const SI: React.FC = () => {
     </div>
   );
 };
-SI.displayName = 'SI';
+SIPage.displayName = 'SIPage';
 
-const changeDay = (day: Day): number => {
+const formatDay = (day: Day): number => {
   switch (day) {
     case 'Monday':
       return 0;
@@ -191,6 +172,17 @@ const changeDay = (day: Day): number => {
     case 'Friday':
       return 4;
   }
+};
+
+const formatTime = (hour: string): number => {
+  // Match everything before "-" and remove ":"
+  let time = parseInt(hour.match(/[^-]*/)![0].replace(':', ''));
+
+  if (time < 600) {
+    time += 1200;
+  }
+
+  return time;
 };
 
 const updateSI = async (classTimes: ClassTime[], student: number): Promise<void> => {
@@ -221,7 +213,7 @@ const addConflicts = async (classTimes: ClassTime[], student: number): Promise<v
         const res = await fetch('/api/add-conflict.php', {
           method: 'Post',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ student, time: hour, day: changeDay(day) })
+          body: JSON.stringify({ student, time: formatTime(hour), day: formatDay(day) })
         });
 
         if (res.status !== 200) {
@@ -235,4 +227,4 @@ const addConflicts = async (classTimes: ClassTime[], student: number): Promise<v
   }
 };
 
-export default SI;
+export default SIPage;
