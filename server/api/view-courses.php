@@ -2,14 +2,14 @@
 include "database.php";
 
 class Course {
-  public int $course_id;
+  public int $courseId;
   public int $name;
   public string $time;
   public int $days;
   public int $si;
 
-  public function __construct(int $course_id, string $name, int $time, int $days, int $si) {
-    $this->course_id = $course_id;
+  public function __construct(int $courseId, string $name, int $time, int $days, int $si) {
+    $this->courseId = $courseId;
     $this->name = $name;
     $this->time = $time;
     $this->days = $days;
